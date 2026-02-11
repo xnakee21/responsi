@@ -1,0 +1,3192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Cinema Pro - Ultimate Thriller Scrapbook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #8b0000;
+            --secondary-color: #ff0000;
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --text-light: #fff;
+            --text-gray: #888;
+            --shadow-red: rgba(139, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        /* Loading Animation */
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes bloodDrip {
+            0% { transform: translateY(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        @keyframes bloodSpread {
+            0% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% { 
+                transform: scale(20);
+                opacity: 0;
+            }
+        }
+
+        @keyframes creepyShadow {
+            0%, 100% { 
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            50% { 
+                opacity: 0.3;
+                transform: translateX(100vw);
+            }
+        }
+
+        @keyframes eyeBlink {
+            0%, 90%, 100% { opacity: 0; }
+            95% { opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.1; }
+        }
+
+        @keyframes glitchText {
+            0% {
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000;
+                transform: skew(0deg);
+            }
+            20% {
+                text-shadow: -2px 0 10px #ff0000, 2px 2px 20px #8b0000;
+                transform: skew(2deg);
+            }
+            40% {
+                text-shadow: 2px 0 10px #ff0000, -2px -2px 20px #8b0000;
+                transform: skew(-2deg);
+            }
+            60% {
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000;
+                transform: skew(1deg);
+            }
+            80% {
+                text-shadow: -2px 2px 10px #ff0000, 2px 0 20px #8b0000;
+                transform: skew(-1deg);
+            }
+            100% {
+                text-shadow: 0 0 10px #ff0000, 0 0 20px #8b0000;
+                transform: skew(0deg);
+            }
+        }
+
+        @keyframes ghostFloat {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 0.2;
+            }
+            50% {
+                transform: translateY(-50px) translateX(30px);
+                opacity: 0.3;
+            }
+            75% {
+                opacity: 0.2;
+            }
+        }
+
+        @keyframes staticNoise {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.03; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Page Container */
+        .page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            pointer-events: none;
+            z-index: 1;
+            overflow-y: auto;
+        }
+
+        .page.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: all;
+            z-index: 10;
+        }
+
+        /* Login Page */
+        #loginPage {
+            background: linear-gradient(135deg, #0a0000 0%, #1a0000 50%, #0a0000 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loginPage::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(139, 0, 0, 0.05) 2px,
+                rgba(139, 0, 0, 0.05) 4px
+            );
+            animation: flicker 3s infinite;
+            pointer-events: none;
+        }
+
+        #loginPage::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(139, 0, 0, 0.1) 0%, transparent 50%);
+            animation: fadeInOut 8s infinite;
+            pointer-events: none;
+        }
+
+        /* Static Noise Effect */
+        .static-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            animation: staticNoise 0.2s infinite;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        /* Creepy Shadows */
+        .creepy-shadow {
+            position: absolute;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.8), transparent);
+            animation: creepyShadow 20s infinite;
+            pointer-events: none;
+            filter: blur(20px);
+        }
+
+        .creepy-shadow:nth-child(6) { animation-delay: 0s; top: 0; }
+        .creepy-shadow:nth-child(7) { animation-delay: 7s; top: 20%; }
+        .creepy-shadow:nth-child(8) { animation-delay: 14s; top: 40%; }
+
+        /* Ghost Effect */
+        .ghost-effect {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+            border-radius: 50%;
+            animation: ghostFloat 15s infinite;
+            pointer-events: none;
+            filter: blur(30px);
+        }
+
+        .ghost-effect:nth-child(9) { left: 10%; animation-delay: 0s; }
+        .ghost-effect:nth-child(10) { left: 60%; animation-delay: 5s; }
+        .ghost-effect:nth-child(11) { left: 80%; animation-delay: 10s; }
+
+        /* Blood Splatter */
+        .blood-splatter {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #8b0000, transparent);
+            border-radius: 50%;
+            animation: bloodSpread 3s infinite;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .blood-splatter:nth-child(12) { top: 20%; left: 15%; animation-delay: 0s; }
+        .blood-splatter:nth-child(13) { top: 60%; left: 70%; animation-delay: 1s; }
+        .blood-splatter:nth-child(14) { top: 40%; left: 40%; animation-delay: 2s; }
+
+        /* Creepy Eyes */
+        .creepy-eyes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .eye {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ff0000 20%, #8b0000 40%, transparent 60%);
+            border-radius: 50%;
+            animation: eyeBlink 8s infinite;
+            box-shadow: 0 0 20px #ff0000;
+        }
+
+        .eye:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+        .eye:nth-child(2) { top: 25%; right: 20%; animation-delay: 2s; }
+        .eye:nth-child(3) { bottom: 30%; left: 25%; animation-delay: 4s; }
+        .eye:nth-child(4) { top: 45%; right: 15%; animation-delay: 6s; }
+        .eye:nth-child(5) { bottom: 20%; right: 30%; animation-delay: 1s; }
+
+        .blood-drip {
+            position: absolute;
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, #8b0000, #ff0000, transparent);
+            animation: bloodDrip 4s infinite;
+            box-shadow: 0 0 5px #8b0000;
+        }
+
+        .blood-drip:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .blood-drip:nth-child(2) { left: 30%; animation-delay: 1.2s; }
+        .blood-drip:nth-child(3) { left: 50%; animation-delay: 0.6s; }
+        .blood-drip:nth-child(4) { left: 70%; animation-delay: 1.8s; }
+        .blood-drip:nth-child(5) { left: 90%; animation-delay: 1s; }
+
+        .login-container {
+            background: rgba(10, 0, 0, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 
+                0 0 100px rgba(139, 0, 0, 0.8),
+                inset 0 0 50px rgba(0, 0, 0, 0.9),
+                0 0 200px rgba(255, 0, 0, 0.3);
+            border: 3px solid #8b0000;
+            position: relative;
+            z-index: 10;
+            max-width: 450px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8b0000, #ff0000, #8b0000, #ff0000);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            animation: fadeInOut 3s infinite;
+        }
+
+        .login-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='blood' x='0' y='0' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Cpath d='M30 30 Q35 25 40 30 T50 30' stroke='%238b0000' fill='none' opacity='0.1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100' height='100' fill='url(%23blood)'/%3E%3C/svg%3E");
+            border-radius: 20px;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 2.8em;
+            color: #ff0000;
+            text-shadow: 
+                0 0 20px #ff0000, 
+                0 0 40px #8b0000,
+                0 0 60px #ff0000,
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 5px;
+            animation: glitchText 3s infinite;
+            font-weight: 900;
+            letter-spacing: 8px;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            position: relative;
+        }
+
+        .login-title::before {
+            content: 'DARK CINEMA';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            animation: glitch 0.3s infinite;
+            text-shadow: -2px 0 #ff0000;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .login-title::after {
+            content: 'DARK CINEMA';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.5;
+            animation: glitch 0.4s infinite reverse;
+            text-shadow: 2px 0 #00ff00;
+            clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: #ff6666;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: flicker 4s infinite;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .warning-text {
+            text-align: center;
+            color: #8b0000;
+            margin-bottom: 30px;
+            font-size: 0.75em;
+            letter-spacing: 2px;
+            font-style: italic;
+            animation: flicker 5s infinite;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.8);
+        }
+
+        .skull-icon {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: float 3s infinite;
+            filter: drop-shadow(0 0 20px #ff0000);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff6666;
+            font-size: 0.9em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #8b0000;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.5),
+                inset 0 0 10px rgba(139, 0, 0, 0.3);
+            background: rgba(10, 0, 0, 0.9);
+        }
+
+        .input-group input::placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #8b0000, #ff0000, #8b0000);
+            background-size: 200% 200%;
+            border: 3px solid #ff0000;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: 900;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.5);
+            animation: pulse 2s infinite;
+            font-family: 'Impact', sans-serif;
+        }
+
+        .login-button:hover {
+            background-position: 100% 0;
+            transform: scale(1.05);
+            box-shadow: 
+                0 0 50px rgba(255, 0, 0, 0.8),
+                inset 0 0 30px rgba(0, 0, 0, 0.7);
+            animation: shake 0.3s;
+        }
+
+        .login-button:active {
+            transform: scale(0.98);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.7em;
+            letter-spacing: 2px;
+            animation: flicker 6s infinite;
+        }
+
+        /* Header Navigation */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-shadow: 0 0 10px var(--secondary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(139, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-red);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 8px 15px;
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 25px;
+            border: 1px solid var(--primary-color);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        /* Search & Filter Bar */
+        .search-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 1em;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 20px var(--shadow-red);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: rgba(139, 0, 0, 0.3);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        /* Statistics Dashboard */
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(20, 0, 0, 0.4));
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            text-align: center;
+            transition: all 0.3s;
+            animation: slideUp 0.5s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow-red);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-gray);
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        /* Movies Grid */
+        .movies-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 50px;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .movie-card {
+            position: relative;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            animation: slideUp 0.6s ease;
+            transform-style: preserve-3d;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px var(--shadow-red);
+            border-color: var(--secondary-color);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .movie-card:hover .movie-poster {
+            transform: scale(1.1);
+        }
+
+        .movie-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 50%);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
+        .movie-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .movie-meta {
+            color: var(--text-gray);
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .movie-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .movie-card:hover .movie-actions {
+            opacity: 1;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(139, 0, 0, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+
+        .action-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.2);
+        }
+
+        .action-btn.active {
+            background: var(--secondary-color);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 5px 15px;
+            background: rgba(139, 0, 0, 0.9);
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .status-badge.watching {
+            background: rgba(255, 165, 0, 0.9);
+        }
+
+        .status-badge.completed {
+            background: rgba(0, 139, 0, 0.9);
+        }
+
+        /* Rating Stars */
+        .movie-rating {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .star {
+            color: #333;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .star.filled {
+            color: gold;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 0, 0, 0.95), rgba(10, 10, 10, 0.95));
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 50px var(--shadow-red);
+            position: relative;
+            animation: slideUp 0.5s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-poster {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%);
+            padding: 30px;
+        }
+
+        .modal-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .modal-meta {
+            color: var(--text-gray);
+            font-size: 1.1em;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-section {
+            margin-bottom: 30px;
+        }
+
+        .modal-section-title {
+            font-size: 1.3em;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-synopsis {
+            line-height: 1.8;
+            color: var(--text-light);
+            text-align: justify;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(139, 0, 0, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-light);
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: var(--secondary-color);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* Video Player */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            background: rgba(20, 20, 20, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--primary-color);
+        }
+
+        .note-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-family: inherit;
+            font-size: 1em;
+            resize: vertical;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .save-note-btn {
+            margin-top: 10px;
+            padding: 10px 25px;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .save-note-btn:hover {
+            background: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        /* Achievements */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .achievement-card {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+            text-align: center;
+            transition: all 0.3s;
+            opacity: 0.5;
+        }
+
+        .achievement-card.unlocked {
+            opacity: 1;
+            border-color: gold;
+            animation: pulse 2s infinite;
+        }
+
+        .achievement-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.unlocked .achievement-icon {
+            filter: grayscale(0%);
+        }
+
+        .achievement-title {
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 0.75em;
+            color: var(--text-gray);
+        }
+
+        /* Theme Switcher */
+        .theme-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .theme-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-btn.active {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 20px var(--shadow-red);
+        }
+
+        .theme-btn.blood-red {
+            background: linear-gradient(135deg, #8b0000, #ff0000);
+        }
+
+        .theme-btn.midnight-blue {
+            background: linear-gradient(135deg, #000428, #004e92);
+        }
+
+        .theme-btn.neon-purple {
+            background: linear-gradient(135deg, #4a0080, #b300ff);
+        }
+
+        .theme-btn.classic-dark {
+            background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 20px;
+            }
+
+            .modal-title {
+                font-size: 1.8em;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .login-container {
+                padding: 30px;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(139, 0, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--secondary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-light);
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px var(--shadow-red);
+            z-index: 9999;
+            animation: slideUp 0.5s ease;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* Streak Counter */
+        .streak-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(255, 165, 0, 0.2);
+            border: 2px solid orange;
+            border-radius: 25px;
+        }
+
+        .streak-fire {
+            font-size: 1.5em;
+            animation: float 2s infinite;
+        }
+
+        /* Comparison View */
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .comparison-card {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(139, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.3s ease;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0;
+            padding: 20px;
+        }
+
+        .pagination-btn {
+            padding: 12px 20px;
+            background: rgba(139, 0, 0, 0.3);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--shadow-red);
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .pagination-numbers {
+            display: flex;
+            gap: 8px;
+        }
+
+        .page-number {
+            width: 45px;
+            height: 45px;
+            background: rgba(139, 0, 0, 0.3);
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .page-number:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .page-number.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 20px var(--shadow-red);
+            transform: scale(1.15);
+        }
+
+        .pagination-info {
+            color: var(--text-gray);
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .pagination-container {
+                flex-wrap: wrap;
+            }
+            
+            .pagination-numbers {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <!-- Static Noise -->
+        <div class="static-noise"></div>
+        
+        <!-- Creepy Shadows -->
+        <div class="creepy-shadow"></div>
+        <div class="creepy-shadow"></div>
+        <div class="creepy-shadow"></div>
+        
+        <!-- Ghost Effects -->
+        <div class="ghost-effect"></div>
+        <div class="ghost-effect"></div>
+        <div class="ghost-effect"></div>
+        
+        <!-- Blood Splatters -->
+        <div class="blood-splatter"></div>
+        <div class="blood-splatter"></div>
+        <div class="blood-splatter"></div>
+        
+        <!-- Creepy Eyes -->
+        <div class="creepy-eyes">
+            <div class="eye"></div>
+            <div class="eye"></div>
+            <div class="eye"></div>
+            <div class="eye"></div>
+            <div class="eye"></div>
+        </div>
+        
+        <!-- Blood Drips -->
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        <div class="blood-drip"></div>
+        
+        <div class="login-container">
+            <div class="skull-icon">💀</div>
+            <h1 class="login-title">DARK CINEMA</h1>
+            <p class="login-subtitle">ULTIMATE THRILLER COLLECTION</p>
+            <p class="warning-text">⚠️ ENTER AT YOUR OWN RISK ⚠️</p>
+            
+            <div class="input-group">
+                <label>🔒 USERNAME</label>
+                <input type="text" id="username" placeholder="Enter your soul..." autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label>🔑 PASSWORD</label>
+                <input type="password" id="password" placeholder="Enter the darkness..." autocomplete="off">
+            </div>
+            
+            <button class="login-button" onclick="login()">
+                <i class="fas fa-skull-crossbones"></i> ENTER THE DARKNESS <i class="fas fa-skull-crossbones"></i>
+            </button>
+            
+            <div class="login-footer">
+                ⚰️ 40 FILMS OF PURE TERROR AWAIT ⚰️
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Page -->
+    <div id="mainPage" class="page">
+        <!-- Header -->
+        <header class="header">
+            <div class="nav-container">
+                <div class="logo">
+                    <i class="fas fa-film"></i>
+                    DARK CINEMA PRO
+                </div>
+                
+                <div class="nav-menu">
+                    <button class="nav-btn active" onclick="showView('home')">
+                        <i class="fas fa-home"></i> Home
+                    </button>
+                    <button class="nav-btn" onclick="showView('stats')">
+                        <i class="fas fa-chart-bar"></i> Statistics
+                    </button>
+                    <button class="nav-btn" onclick="showView('achievements')">
+                        <i class="fas fa-trophy"></i> Achievements
+                    </button>
+                    <button class="nav-btn" onclick="showView('settings')">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <div id="displayUsername" style="font-weight: bold;">User</div>
+                        <div class="streak-display" style="font-size: 0.8em; margin-top: 5px;">
+                            <span class="streak-fire">🔥</span>
+                            <span id="streakCount">0</span> day streak
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Home View -->
+        <div id="homeView" class="view-content">
+            <!-- Search & Filter -->
+            <div class="search-container">
+                <div class="search-bar">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput" 
+                        placeholder="🔍 Search movies by title, director, or year..."
+                        oninput="filterMovies()">
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="sortMovies('default')">
+                            <i class="fas fa-sort"></i> Default
+                        </button>
+                        <button class="filter-btn" onclick="sortMovies('year')">
+                            <i class="fas fa-calendar"></i> Year
+                        </button>
+                        <button class="filter-btn" onclick="sortMovies('title')">
+                            <i class="fas fa-font"></i> A-Z
+                        </button>
+                        <button class="filter-btn" onclick="sortMovies('rating')">
+                            <i class="fas fa-star"></i> Rating
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterByStatus('all')">
+                        All Movies
+                    </button>
+                    <button class="filter-btn" onclick="filterByStatus('watchlist')">
+                        <i class="fas fa-bookmark"></i> Watchlist
+                    </button>
+                    <button class="filter-btn" onclick="filterByStatus('watching')">
+                        <i class="fas fa-play"></i> Watching
+                    </button>
+                    <button class="filter-btn" onclick="filterByStatus('completed')">
+                        <i class="fas fa-check"></i> Completed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-film"></i></div>
+                    <div class="stat-value" id="totalMovies">40</div>
+                    <div class="stat-label">Total Movies</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-value" id="watchedCount">0</div>
+                    <div class="stat-label">Watched</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-value" id="avgRating">0.0</div>
+                    <div class="stat-label">Avg Rating</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-value" id="achievementCount">0</div>
+                    <div class="stat-label">Achievements</div>
+                </div>
+            </div>
+
+            <!-- Movies Grid -->
+            <div class="movies-container">
+                <div class="movies-grid" id="moviesGrid"></div>
+                
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <button class="pagination-btn" id="prevBtn" onclick="changePage(-1)">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </button>
+                    
+                    <div class="pagination-numbers" id="paginationNumbers"></div>
+                    
+                    <button class="pagination-btn" id="nextBtn" onclick="changePage(1)">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                
+                <div class="pagination-info" style="text-align: center; margin-bottom: 30px;">
+                    Showing <span id="showingRange"></span> of <span id="totalMovies2">40</span> movies
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics View -->
+        <div id="statsView" class="view-content" style="display: none;">
+            <div class="movies-container">
+                <h2 style="margin-bottom: 30px; font-size: 2em; color: var(--secondary-color);">
+                    <i class="fas fa-chart-line"></i> Your Statistics
+                </h2>
+                
+                <div class="stats-container" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                        <div class="stat-value" id="totalWatchTime">0</div>
+                        <div class="stat-label">Hours Watched</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="stat-value" id="favoriteDirector">-</div>
+                        <div class="stat-label">Favorite Director</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-value" id="favoriteYear">-</div>
+                        <div class="stat-label">Favorite Year</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 50px;">
+                    <h3 style="margin-bottom: 20px; color: var(--secondary-color);">
+                        <i class="fas fa-clock"></i> Watch History
+                    </h3>
+                    <div id="watchHistory" style="background: rgba(20,20,20,0.8); padding: 30px; border-radius: 15px; border: 2px solid var(--primary-color);">
+                        <p style="color: var(--text-gray); text-align: center;">No watch history yet. Start watching movies!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements View -->
+        <div id="achievementsView" class="view-content" style="display: none;">
+            <div class="movies-container">
+                <h2 style="margin-bottom: 30px; font-size: 2em; color: var(--secondary-color);">
+                    <i class="fas fa-trophy"></i> Achievements
+                </h2>
+                
+                <div class="achievements-grid" id="achievementsGrid">
+                    <!-- Achievements will be populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="settingsView" class="view-content" style="display: none;">
+            <div class="movies-container">
+                <h2 style="margin-bottom: 30px; font-size: 2em; color: var(--secondary-color);">
+                    <i class="fas fa-cog"></i> Settings
+                </h2>
+                
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-palette"></i> Theme
+                    </h3>
+                    <div class="theme-options">
+                        <button class="theme-btn blood-red active" onclick="changeTheme('blood-red')" title="Blood Red"></button>
+                        <button class="theme-btn midnight-blue" onclick="changeTheme('midnight-blue')" title="Midnight Blue"></button>
+                        <button class="theme-btn neon-purple" onclick="changeTheme('neon-purple')" title="Neon Purple"></button>
+                        <button class="theme-btn classic-dark" onclick="changeTheme('classic-dark')" title="Classic Dark"></button>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-user-circle"></i> Profile
+                    </h3>
+                    <div class="notes-section">
+                        <label style="display: block; margin-bottom: 10px; color: var(--text-light);">Display Name</label>
+                        <input type="text" id="profileName" class="search-input" style="margin-bottom: 15px;" placeholder="Enter your name">
+                        
+                        <label style="display: block; margin-bottom: 10px; color: var(--text-light);">Bio</label>
+                        <textarea class="note-input" id="profileBio" placeholder="Tell us about your love for thriller movies..."></textarea>
+                        
+                        <button class="save-note-btn" onclick="saveProfile()">
+                            <i class="fas fa-save"></i> Save Profile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-download"></i> Data Management
+                    </h3>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="filter-btn" onclick="exportData()">
+                            <i class="fas fa-file-export"></i> Export Data
+                        </button>
+                        <button class="filter-btn" onclick="importData()">
+                            <i class="fas fa-file-import"></i> Import Data
+                        </button>
+                        <button class="filter-btn" onclick="resetData()" style="background: rgba(139, 0, 0, 0.5);">
+                            <i class="fas fa-trash"></i> Reset All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movie Detail Modal -->
+    <div id="movieModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="modal-header">
+                <img id="modalPoster" class="modal-poster" src="" alt="Movie Poster">
+                <div class="modal-overlay">
+                    <h2 class="modal-title" id="modalTitle"></h2>
+                    <p class="modal-meta" id="modalMeta"></p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Trailer Section -->
+                <div class="modal-section" id="trailerSection">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-play-circle"></i> Trailer
+                    </h3>
+                    <div class="video-container">
+                        <iframe id="trailerVideo" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Synopsis -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-book-open"></i> Synopsis
+                    </h3>
+                    <p class="modal-synopsis" id="modalSynopsis"></p>
+                </div>
+
+                <!-- Rating -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-star"></i> Your Rating
+                    </h3>
+                    <div class="movie-rating" id="modalRating"></div>
+                </div>
+
+                <!-- Status -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-list"></i> Status
+                    </h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="filter-btn" onclick="updateMovieStatus(currentMovieId, 'watchlist')">
+                            <i class="fas fa-bookmark"></i> Watchlist
+                        </button>
+                        <button class="filter-btn" onclick="updateMovieStatus(currentMovieId, 'watching')">
+                            <i class="fas fa-play"></i> Watching
+                        </button>
+                        <button class="filter-btn" onclick="updateMovieStatus(currentMovieId, 'completed')">
+                            <i class="fas fa-check"></i> Completed
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Personal Notes -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-sticky-note"></i> Personal Notes
+                    </h3>
+                    <div class="notes-section">
+                        <textarea class="note-input" id="movieNotes" placeholder="Write your thoughts about this movie..."></textarea>
+                        <button class="save-note-btn" onclick="saveMovieNotes(currentMovieId)">
+                            <i class="fas fa-save"></i> Save Notes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fun Facts -->
+                <div class="modal-section" id="funFactsSection">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-lightbulb"></i> Did You Know?
+                    </h3>
+                    <div id="funFacts" style="background: rgba(20,20,20,0.5); padding: 20px; border-radius: 10px; border-left: 4px solid var(--primary-color);">
+                    </div>
+                </div>
+
+                <!-- Share -->
+                <div class="modal-section">
+                    <h3 class="modal-section-title">
+                        <i class="fas fa-share-alt"></i> Share
+                    </h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="action-btn" onclick="shareMovie('twitter')" style="width: auto; padding: 10px 20px; border-radius: 8px;">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                        <button class="action-btn" onclick="shareMovie('facebook')" style="width: auto; padding: 10px 20px; border-radius: 8px;">
+                            <i class="fab fa-facebook"></i>
+                        </button>
+                        <button class="action-btn" onclick="shareMovie('whatsapp')" style="width: auto; padding: 10px 20px; border-radius: 8px;">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="action-btn" onclick="copyMovieLink()" style="width: auto; padding: 10px 20px; border-radius: 8px;">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Global Variables
+        let currentMovieId = null;
+        let currentFilter = 'all';
+        let currentSort = 'default';
+        let currentPage = 1;
+        let moviesPerPage = 8;
+
+        // Movies Data with Additional Info
+        const movies = {
+            psycho: {
+                id: 'psycho',
+                title: "PSYCHO",
+                year: "1960",
+                director: "Alfred Hitchcock",
+                poster: "https://image.tmdb.org/t/p/w500/81d8oyEFgj7FlxJqSDXWr8JH8kV.jpg",
+                trailer: "https://www.youtube.com/embed/Wz719b9QUqY",
+                synopsis: "Marion Crane, seorang wanita yang mencuri uang dari kantornya, melarikan diri dan berhenti di sebuah motel terpencil yang dikelola oleh Norman Bates yang tampak pemalu. Namun, Norman menyimpan rahasia gelap yang mengerikan. Ibunya yang posesif dan kamar mandi yang berhantu menjadi saksi bisu dari pembunuhan yang brutal. Film ini mengeksplorasi tema kegilaan, identitas ganda, dan horor psikologis yang akan membuat Anda tidak pernah merasa aman di shower lagi.",
+                funFacts: [
+                    "Film ini dilarang di beberapa negara karena adegan shower yang terlalu brutal",
+                    "Alfred Hitchcock membeli semua salinan novel asli untuk menjaga twist ending tetap rahasia",
+                    "Darah cokelat digunakan untuk adegan shower karena film dibuat dalam hitam-putih"
+                ],
+                runtime: "109 min"
+            },
+            shining: {
+                id: 'shining',
+                title: "THE SHINING",
+                year: "1980",
+                director: "Stanley Kubrick",
+                poster: "https://image.tmdb.org/t/p/w500/xazWoLealQwEgqZ89MLZklLZD3k.jpg",
+                trailer: "https://www.youtube.com/embed/5Cb3ik6zP2I",
+                synopsis: "Jack Torrance, seorang penulis yang sedang mengalami writer's block, menerima pekerjaan sebagai penjaga musim dingin di Hotel Overlook yang terisolasi. Bersama istri dan anaknya yang memiliki kemampuan 'shining', mereka tinggal di hotel yang memiliki sejarah kelam. Seiring waktu, Jack mulai kehilangan kewarasannya, dipengaruhi oleh kekuatan supernatural hotel. Lorong-lorong yang menakutkan, elevator berdarah, dan ruang 237 menjadi simbol teror yang tak terlupakan.",
+                funFacts: [
+                    "Kubrick meminta 127 take untuk satu scene, rekor untuk film fitur",
+                    "Hotel Overlook terinspirasi dari The Stanley Hotel di Colorado",
+                    "Stephen King tidak menyukai adaptasi Kubrick dari novelnya"
+                ],
+                runtime: "146 min"
+            },
+            exorcist: {
+                id: 'exorcist',
+                title: "THE EXORCIST",
+                year: "1973",
+                director: "William Friedkin",
+                poster: "https://image.tmdb.org/t/p/w500/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg",
+                trailer: "https://www.youtube.com/embed/YDGw1MTEe9k",
+                synopsis: "Regan, gadis berusia 12 tahun yang polos, mulai menunjukkan perilaku aneh dan mengerikan. Ibunya yang putus asa mencari bantuan medis, namun tidak ada yang bisa menjelaskan kondisi Regan. Akhirnya, mereka memanggil Pastor Karras dan Pastor Merrin untuk melakukan ritual pengusiran setan. Apa yang mereka hadapi adalah iblis kuno yang sangat kuat. Kepala yang berputar 360 derajat, suara mengerikan, dan transformasi fisik yang mengganggu membuat film ini menjadi standar horror supernatural.",
+                funFacts: [
+                    "Suhu di set dijaga sangat dingin agar napas aktor terlihat",
+                    "Beberapa penonton pingsan dan muntah saat menonton premiere",
+                    "Film ini didasarkan pada kisah pengusiran setan yang nyata tahun 1949"
+                ],
+                runtime: "122 min"
+            },
+            halloween: {
+                id: 'halloween',
+                title: "HALLOWEEN",
+                year: "1978",
+                director: "John Carpenter",
+                poster: "hallowen.jpg",
+                trailer: "https://www.youtube.com/embed/oVgtguYmNBg",
+                synopsis: "Michael Myers, seorang anak yang membunuh kakaknya pada malam Halloween, melarikan diri dari rumah sakit jiwa 15 tahun kemudian. Dia kembali ke kampung halamannya, Haddonfield, dengan satu tujuan: membunuh. Laurie Strode menjadi target utamanya. Dengan topeng putih yang ikonik dan pisau dapur, Michael meneror kota dalam malam yang penuh darah. Dr. Loomis, psikiater Michael, berusaha menghentikannya sebelum terlambat. Film ini menciptakan template untuk slasher film modern.",
+                funFacts: [
+                    "Budget film hanya $300,000 tapi menghasilkan $70 juta",
+                    "Topeng Michael Myers sebenarnya adalah topeng William Shatner yang dicat putih",
+                    "John Carpenter membuat soundtrack ikonik dalam 3 hari"
+                ],
+                runtime: "91 min"
+            },
+            conjuring: {
+                id: 'conjuring',
+                title: "THE CONJURING",
+                year: "2013",
+                director: "James Wan",
+                poster: "https://image.tmdb.org/t/p/w500/wVYREutTvI2tmxr6ujrHT704wGF.jpg",
+                trailer: "https://www.youtube.com/embed/k10ETZ41q5o",
+                synopsis: "Ed dan Lorraine Warren, pasangan paranormal investigator terkenal, dipanggil untuk membantu keluarga Perron yang diintimidasi oleh kehadiran gelap di rumah pertanian mereka. Apa yang dimulai sebagai ketukan dan bau busuk berkembang menjadi serangan fisik yang brutal. Mereka menemukan bahwa rumah tersebut memiliki sejarah kelam: seorang penyihir yang mengutuk tanah tersebut. Boneka Annabelle, permainan tepuk tangan yang menakutkan, dan ruang bawah tanah yang angker menciptakan teror yang nyata.",
+                funFacts: [
+                    "Didasarkan pada kasus nyata yang diselidiki oleh Ed dan Lorraine Warren",
+                    "Boneka Annabelle asli adalah boneka Raggedy Ann, bukan boneka porselen",
+                    "James Wan menolak menggunakan CGI berlebihan untuk menjaga horor tetap realistis"
+                ],
+                runtime: "112 min"
+            },
+            insidious: {
+                id: 'insidious',
+                title: "INSIDIOUS",
+                year: "2010",
+                director: "James Wan",
+                poster: "insidious.jpg",
+                trailer: "https://www.youtube.com/embed/zuZnRUcoWos",
+                synopsis: "Ketika putra mereka, Dalton, jatuh koma tanpa penjelasan medis, keluarga Lambert mulai mengalami fenomena supernatural yang mengerikan. Mereka memanggil medium Elise Rainier yang mengungkapkan bahwa Dalton tidak sedang koma - jiwanya terperangkap di dimensi lain yang disebut 'The Further'. Di dimensi itu, entitas jahat mengincar tubuh Dalton yang kosong. Josh, ayah Dalton, harus melakukan perjalanan astral untuk menyelamatkan anaknya, menghadapi iblis merah bermuka hitam dan hantu-hantu mengerikan.",
+                funFacts: [
+                    "Dibuat dengan budget kecil $1.5 juta, menghasilkan $97 juta",
+                    "Konsep 'The Further' terinspirasi dari berbagai mitologi tentang proyeksi astral",
+                    "Demon merah 'Lipstick-Face Demon' menjadi salah satu ikon horor modern"
+                ],
+                runtime: "103 min"
+            },
+            hereditary: {
+                id: 'hereditary',
+                title: "HEREDITARY",
+                year: "2018",
+                director: "Ari Aster",
+                poster: "hereditary.jpg",
+                trailer: "https://www.youtube.com/embed/V6wWKNij_1M",
+                synopsis: "Setelah kematian ibu mereka yang misterius, keluarga Graham mulai mengungkap rahasia gelap dan mengerikan tentang leluhur mereka. Annie, seorang seniman miniatur, mencoba memahami warisan traumatis yang menghantui keluarganya. Namun, serangkaian tragedi mengerikan mulai terjadi. Putrinya Charlie memiliki perilaku aneh, dan sebuah kecelakaan yang menghancurkan mengubah segalanya. Ritual kuno, kultus setan, dan kegilaan turun-temurun berpadu dalam horror yang sangat disturbing dan penuh simbolisme.",
+                funFacts: [
+                    "Toni Collette tidak dinominasikan Oscar meski performanya luar biasa, memicu kontroversi",
+                    "Film penuh simbolisme dan easter eggs yang berhubungan dengan demon Paimon",
+                    "Scene 'clicking' Charlie menjadi viral dan ikonik"
+                ],
+                runtime: "127 min"
+            },
+            sinister: {
+                id: 'sinister',
+                title: "SINISTER",
+                year: "2012",
+                director: "Scott Derrickson",
+                poster: "sinister.jpg",
+                trailer: "https://www.youtube.com/embed/_kbQAJR9YWQ",
+                synopsis: "Ellison Oswalt, seorang penulis true crime, pindah ke rumah di mana sebuah keluarga dibunuh secara brutal, mencari inspirasi untuk buku barunya. Di loteng, dia menemukan kotak berisi film super 8 yang menampilkan pembunuhan berbagai keluarga. Semakin dalam dia menyelidiki, semakin jelas bahwa pembunuhan-pembunuhan ini terhubung oleh entitas supernatural kuno bernama Bughuul. Film-film snuff yang mengganggu, sosok bayangan di background, dan musik yang menakutkan menciptakan atmosfer yang sangat mencekam.",
+                funFacts: [
+                    "Dinobatkan sebagai film terseram berdasarkan studi heart rate monitor",
+                    "Bughuul terinspirasi dari berbagai mitologi tentang 'Boogeyman'",
+                    "Film-film Super 8 dibuat dengan kamera asli untuk autentisitas"
+                ],
+                runtime: "110 min"
+            },
+            silence: {
+                id: 'silence',
+                title: "THE SILENCE OF THE LAMBS",
+                year: "1991",
+                director: "Jonathan Demme",
+                poster: "https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
+                trailer: "https://www.youtube.com/embed/W6Mm8Sbe__o",
+                synopsis: "Clarice Starling, cadet FBI, ditugaskan untuk mewawancarai Dr. Hannibal Lecter, seorang psikiater jenius dan kanibal yang dipenjara, untuk mendapatkan petunjuk tentang serial killer yang sedang diburu: Buffalo Bill. Bill menculik dan membunuh wanita untuk kulitnya. Permainan kucing-kucingan psikologis antara Clarice dan Hannibal terungkap, di mana Hannibal perlahan mengungkap trauma masa kecil Clarice sambil memberikan petunjuk kriptik. Ketegangan meningkat saat FBI berlomba melawan waktu untuk menyelamatkan korban terakhir Bill.",
+                funFacts: [
+                    "Salah satu dari 3 film yang memenangkan 'Big Five' Academy Awards",
+                    "Anthony Hopkins hanya muncul 16 menit di layar tapi memenangkan Best Actor",
+                    "Quote 'Hello, Clarice' sebenarnya tidak ada dalam film (Mandela Effect)"
+                ],
+                runtime: "118 min"
+            },
+            getout: {
+                id: 'getout',
+                title: "GET OUT",
+                year: "2017",
+                director: "Jordan Peele",
+                poster: "https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
+                trailer: "https://www.youtube.com/embed/DzfpyUB60YY",
+                synopsis: "Chris Washington, fotografer muda Afrika-Amerika, pergi bersama pacarnya Rose untuk bertemu keluarganya di pedesaan. Awalnya, keluarga Rose tampak terlalu ramah, dan Chris merasa ada yang tidak beres dengan pelayan Afrika-Amerika mereka yang bertingkah aneh. Malam demi malam, Chris mengungkap konspirasi mengerikan: keluarga Rose adalah bagian dari kultus yang menculik orang kulit hitam untuk mentransplantasi kesadaran orang kulit putih ke tubuh mereka. Hypnosis, operasi otak, dan 'The Sunken Place' menciptakan horror yang unik dan relevan secara sosial.",
+                funFacts: [
+                    "Jordan Peele's debut sebagai sutradara, langsung masuk nominasi Oscar Best Picture",
+                    "Film ini adalah social commentary tentang rasisme modern",
+                    "'The Sunken Place' menjadi istilah populer dalam budaya pop"
+                ],
+                runtime: "104 min"
+            },
+            blackswan: {
+                id: 'blackswan',
+                title: "BLACK SWAN",
+                year: "2010",
+                director: "Darren Aronofsky",
+                poster: "https://image.tmdb.org/t/p/w500/hqh5O4KssfJWI62HGAgrjHXbxhD.jpg",
+                trailer: "https://www.youtube.com/embed/5jaI1XOB-bs",
+                synopsis: "Nina Sayers, balerina perfeksionis di New York City Ballet, mendapatkan peran utama dalam produksi Swan Lake. Dia sempurna sebagai White Swan yang rapuh, tetapi berjuang untuk menemukan sisi gelap yang diperlukan untuk Black Swan. Tekanan dari direktur artistik yang demanding, ibu yang overprotective, dan persaingan dengan balerina baru Lily mendorong Nina ke tepi kegilaan. Halusinasi, paranoia, dan transformasi fisik yang mengganggu mengaburkan batas antara realitas dan delusi. Film ini adalah eksplorasi yang brutal tentang obsesi dan kehancuran diri.",
+                funFacts: [
+                    "Natalie Portman berlatih ballet 5 jam sehari selama setahun",
+                    "Portman memenangkan Oscar untuk performa yang intens ini",
+                    "Film menggunakan mirror dan doppelganger sebagai motif visual utama"
+                ],
+                runtime: "108 min"
+            },
+            shutter: {
+                id: 'shutter',
+                title: "SHUTTER ISLAND",
+                year: "2010",
+                director: "Martin Scorsese",
+                poster: "https://image.tmdb.org/t/p/w500/4GDy0PHYX3VRXUtwK5ysFbg3kEx.jpg",
+                trailer: "https://www.youtube.com/embed/5iaYLCiq5RM",
+                synopsis: "Tahun 1954, US Marshal Teddy Daniels tiba di Ashecliffe Hospital di pulau terpencil untuk menyelidiki hilangnya seorang pasien pembunuh. Seiring penyelidikan berlanjut, Teddy mulai mempertanyakan segala sesuatu: staf rumah sakit yang tidak kooperatif, badai yang mengisolasi pulau, dan visi istrinya yang mati terbakar. Dia yakin rumah sakit melakukan eksperimen ilegal pada pasien. Namun, plot twist yang menghancurkan mengungkapkan kebenaran yang jauh lebih gelap tentang identitas Teddy sendiri dan alasan sebenarnya dia ada di pulau itu.",
+                funFacts: [
+                    "Scorsese membuat film ini sebagai tribute untuk film noir klasik",
+                    "Ending masih diperdebatkan hingga sekarang - apakah Teddy sembuh atau tidak?",
+                    "Musik klasik modern dari Mahler dan Ligeti menciptakan atmosfer yang haunting"
+                ],
+                runtime: "138 min"
+            },
+            saw: {
+                id: 'saw',
+                title: "SAW",
+                year: "2004",
+                director: "James Wan",
+                poster: "saw.jpg",
+                trailer: "https://www.youtube.com/embed/S-1QgOMQ-ls",
+                synopsis: "Dua orang terbangun terbelenggu di kamar mandi yang kotor dan gelap. Di antara mereka terbaring mayat dengan pistol di tangannya. Mereka menemukan kaset yang memberitahu bahwa mereka adalah korban dari Jigsaw Killer, pembunuh berantai yang memaksa korbannya untuk 'bermain game' mengerikan untuk bertahan hidup. Adam harus melarikan diri, sementara Dr. Lawrence Gordon harus membunuh Adam sebelum waktu habis, atau keluarganya akan mati. Plot twist yang brilian dan permainan psikologis yang sadis membuat film ini menjadi franchise horor tersukses.",
+                funFacts: [
+                    "Film ini dibuat dengan budget hanya $1.2 juta dalam 18 hari",
+                    "Reverse bear trap menjadi salah satu torture device paling ikonik dalam sejarah film horor",
+                    "Twist ending masih dianggap sebagai salah satu yang terbaik dalam film thriller"
+                ],
+                runtime: "103 min"
+            },
+            ring: {
+                id: 'ring',
+                title: "THE RING",
+                year: "2002",
+                director: "Gore Verbinski",
+                poster: "ring.jpg",
+                trailer: "https://www.youtube.com/embed/CG7BAY6_hsw",
+                synopsis: "Rachel Keller, seorang jurnalis, menyelidiki kematian misterius keponakannya yang dikaitkan dengan videotape yang terkutuk. Siapa pun yang menonton tape tersebut akan menerima panggilan telepon yang mengatakan mereka akan mati dalam 7 hari. Setelah menonton tape itu sendiri, Rachel berlomba melawan waktu untuk mengungkap misteri di balik kutukan tersebut. Dia menemukan kisah tragis Samara Morgan, gadis dengan kekuatan supernatural yang mengerikan. Sumur, rambut panjang hitam, dan TV yang menyala sendiri menjadi simbol teror yang ikonik.",
+                funFacts: [
+                    "Remake dari film Jepang 'Ringu' yang sangat sukses",
+                    "Sosok Samara keluar dari TV menjadi salah satu scene paling ikonik dalam horor modern",
+                    "Film ini memulai tren remake horor Asia di Hollywood"
+                ],
+                runtime: "115 min"
+            },
+            itmovie: {
+                id: 'itmovie',
+                title: "IT",
+                year: "2017",
+                director: "Andy Muschietti",
+                poster: "https://image.tmdb.org/t/p/w500/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg",
+                trailer: "https://www.youtube.com/embed/xKJmEC5ieOk",
+                synopsis: "Di kota kecil Derry, Maine, sekelompok anak-anak yang menyebut diri mereka 'The Losers Club' menghadapi ketakutan terbesar mereka saat mereka berhadapan dengan Pennywise, badut jahat yang muncul setiap 27 tahun untuk memangsa anak-anak. Pennywise dapat mengambil bentuk apapun yang ditakuti korbannya. Bill Denbrough memimpin kelompoknya untuk melawan monster kuno ini setelah adiknya Georgie menjadi korban. Selokan, balon merah, dan senyum mengerikan Pennywise menciptakan teror yang menghantui.",
+                funFacts: [
+                    "Bill Skarsgård menciptakan gerakan mata Pennywise yang unik dan menakutkan",
+                    "Film ini menjadi film horor terlaris sepanjang masa",
+                    "Scene pembukaan dengan Georgie dan balon merah menjadi viral"
+                ],
+                runtime: "135 min"
+            },
+            nightmare: {
+                id: 'nightmare',
+                title: "A NIGHTMARE ON ELM STREET",
+                year: "1984",
+                director: "Wes Craven",
+                poster: "nightmare.jpg",
+                trailer: "https://www.youtube.com/embed/dCVh4lBfW-c",
+                synopsis: "Sekelompok remaja di Springwood mulai mengalami mimpi buruk yang sama tentang pria dengan wajah terbakar, sweater bergaris merah-hijau, dan sarung tangan dengan pisau di setiap jarinya. Freddy Krueger, pembunuh anak yang dibakar hidup-hidup oleh orang tua mereka, kini kembali untuk membalas dendam dalam mimpi. Jika kamu mati dalam mimpi, kamu mati di dunia nyata. Nancy Thompson harus tetap terjaga dan menemukan cara untuk mengalahkan Freddy sebelum dia dan teman-temannya semua mati.",
+                funFacts: [
+                    "Freddy Krueger terinspirasi dari artikel koran tentang orang yang meninggal dalam mimpi",
+                    "Johnny Depp membuat debut filmnya di sini",
+                    "Quote 'One, two, Freddy's coming for you' menjadi sangat ikonik"
+                ],
+                runtime: "91 min"
+            },
+            candyman: {
+                id: 'candyman',
+                title: "CANDYMAN",
+                year: "1992",
+                director: "Bernard Rose",
+                poster: "candy.jpg",
+                trailer: "https://www.youtube.com/embed/AFjb447gMIM",
+                synopsis: "Helen Lyle, mahasiswa pascasarjana, meneliti legenda urban Candyman untuk tesis-nya. Legenda mengatakan jika kamu mengucapkan namanya lima kali di depan cermin, dia akan muncul dengan kait tangan-nya dan membunuhmu. Helen menemukan bahwa Candyman adalah jiwa Daniel Robitaille, seorang seniman Afrika-Amerika yang dibunuh secara brutal karena hubungannya dengan wanita kulit putih. Saat Helen skeptis, dia tanpa sadar memanggil Candyman yang sesungguhnya, dan teror pun dimulai.",
+                funFacts: [
+                    "Tony Todd (Candyman) memiliki 23 sengatan lebah nyata saat syuting scene dengan lebah",
+                    "Film ini adalah social commentary tentang rasisme dan segregasi",
+                    "Soundtrack Philip Glass menciptakan atmosfer yang hypnotic dan menakutkan"
+                ],
+                runtime: "99 min"
+            },
+            texas: {
+                id: 'texas',
+                title: "THE TEXAS CHAIN SAW MASSACRE",
+                year: "1974",
+                director: "Tobe Hooper",
+                poster: "texas.jpg",
+                trailer: "https://www.youtube.com/embed/MDUDUgU9G1I",
+                synopsis: "Sekelompok remaja mengunjungi pemakaman di Texas untuk memastikan makam kakek mereka tidak diganggu oleh vandal. Dalam perjalanan, mereka mampir ke sebuah rumah terpencil yang ternyata dihuni oleh keluarga kanibal yang gila. Leatherface, pria mengenakan topeng kulit manusia dan bersenjatakan gergaji mesin, mulai memburu mereka satu per satu. Film ini, yang diklaim 'berdasarkan kisah nyata', menciptakan sub-genre horor rural yang mengerikan dengan kekerasan mentah dan atmosfer yang claustrophobic.",
+                funFacts: [
+                    "Film ini dilarang di beberapa negara karena konten kekerasan (meski actual gore minimal)",
+                    "Terinspirasi oleh pembunuh berantai Ed Gein",
+                    "Dibuat dengan budget sangat kecil tapi menjadi sangat berpengaruh dalam genre horor"
+                ],
+                runtime: "83 min"
+            },
+            midsommar: {
+                id: 'midsommar',
+                title: "MIDSOMMAR",
+                year: "2019",
+                director: "Ari Aster",
+                poster: "https://image.tmdb.org/t/p/w500/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",
+                trailer: "https://www.youtube.com/embed/1Vnghdsjmd0",
+                synopsis: "Dani Ardor, yang baru saja mengalami tragedi keluarga, bergabung dengan pacarnya Christian dan teman-temannya untuk menghadiri festival midsummer di desa terpencil di Swedia. Apa yang dimulai sebagai liburan pastoral yang idyllic perlahan berubah menjadi kompetisi ritual yang semakin mengerikan dan gila oleh kultus pagan. Dalam cahaya siang yang terus menerus, horor terjadi secara terang-terangan. Ritual pembakaran, tarian menyeramkan, dan smile yang dipaksakan menciptakan folk horror yang disturbing.",
+                funFacts: [
+                    "Sebagian besar film terjadi di siang hari bolong, sangat tidak biasa untuk film horor",
+                    "Ari Aster menulis naskah saat mengalami break-up yang traumatis",
+                    "Film penuh dengan simbolisme pagan dan Swedish folklore"
+                ],
+                runtime: "148 min"
+            },
+            us: {
+                id: 'us',
+                title: "US",
+                year: "2019",
+                director: "Jordan Peele",
+                poster: "https://image.tmdb.org/t/p/w500/ux2dU1jQ2ACIMShzB3yP93Udpzc.jpg",
+                trailer: "https://www.youtube.com/embed/hNCmb-4oXJA",
+                synopsis: "Adelaide Wilson kembali ke rumah pantai masa kecilnya bersama suaminya dan dua anak mereka. Namun, malam pertama mereka di sana, keluarga menghadapi teror yang tidak dapat dijelaskan: empat orang asing dengan wajah yang sama persis dengan mereka muncul di jalan masuk rumah mereka. 'The Tethered' - doppelganger jahat mereka - memulai serangan brutal. Terungkap bahwa ini bukan hanya terjadi pada keluarga Wilson, tetapi seluruh Amerika menghadapi invasi dari versi gelap mereka sendiri.",
+                funFacts: [
+                    "Lupita Nyong'o berperan ganda sebagai Adelaide dan Red dengan performa yang luar biasa",
+                    "Hands Across America dari tahun 1986 menjadi elemen plot utama",
+                    "Film penuh dengan teori dan interpretasi tentang dualitas manusia"
+                ],
+                runtime: "116 min"
+            },
+            terrifier: {
+                id: 'terrifier',
+                title: "TERRIFIER",
+                year: "2016",
+                director: "Damien Leone",
+                poster: "clown.jpg",
+                trailer: "https://www.youtube.com/embed/fN5j1MtGO2Q",
+                synopsis: "Pada malam Halloween, dua wanita muda, Tara dan Dawn, bertemu dengan Art the Clown, seorang badut menyeramkan yang diam namun sangat sadis. Apa yang dimulai sebagai perjumpaan aneh berubah menjadi mimpi buruk yang mengerikan. Art menguntit dan menyiksa korban-korbannya dengan cara yang sangat brutal dan kreatif. Tanpa dialog, Art the Clown menggunakan bahasa tubuh dan senyum mengerikannya untuk menciptakan teror yang tak tertahankan. Film ini terkenal dengan gore yang ekstrem dan kekerasan yang tidak ditahan-tahan.",
+                funFacts: [
+                    "Art the Clown tidak berbicara sama sekali, hanya menggunakan ekspresi dan bahasa tubuh",
+                    "Film ini dibuat dengan budget sangat kecil tapi menjadi cult classic",
+                    "Banyak penonton melaporkan pingsan dan keluar dari bioskop karena scene yang terlalu brutal"
+                ],
+                runtime: "85 min"
+            },
+            conjuring2: {
+                id: 'conjuring2',
+                title: "THE CONJURING 2",
+                year: "2016",
+                director: "James Wan",
+                poster: "https://image.tmdb.org/t/p/w500/zEqyD0SBt6HL7W9JQoWwtd5Do1T.jpg",
+                trailer: "https://www.youtube.com/embed/KisPhy7T__Q",
+                synopsis: "Ed dan Lorraine Warren pergi ke Enfield, London untuk membantu single mother Peggy Hodgson yang rumahnya dihantui oleh roh jahat. Putrinya, Janet, menjadi target utama dari entitas yang menyebut dirinya Bill Wilkins. Lorraine mengalami visi mengerikan tentang The Crooked Man dan Valak, demon nun yang sangat kuat. Kasus Enfield Poltergeist ini menjadi salah satu kasus paranormal paling terkenal di Inggris. Ed dan Lorraine harus menghadapi ketakutan terbesar mereka untuk menyelamatkan keluarga Hodgson.",
+                funFacts: [
+                    "Didasarkan pada kasus nyata Enfield Poltergeist yang terjadi di tahun 1977",
+                    "Valak the Demon Nun menjadi sangat populer hingga mendapat spin-off sendiri",
+                    "Janet Hodgson asli menjadi konsultan untuk film ini"
+                ],
+                runtime: "134 min"
+            },
+            annabelle: {
+                id: 'annabelle',
+                title: "ANNABELLE",
+                year: "2014",
+                director: "John R. Leonetti",
+                poster: "annabelle.jpg",
+                trailer: "https://www.youtube.com/embed/paFgQNPGlsg",
+                synopsis: "Pasangan muda John dan Mia Form sangat bahagia menunggu kelahiran anak pertama mereka. John memberikan boneka antik yang langka kepada Mia. Namun, suatu malam, rumah mereka diserang oleh anggota kultus setan. Setelah serangan tersebut, kejadian-kejadian mengerikan mulai terjadi. Boneka Annabelle menjadi wadah bagi roh jahat yang menginginkan jiwa. Mia harus menemukan cara untuk menghentikan entitas sebelum bayinya lahir dan menjadi target utama.",
+                funFacts: [
+                    "Boneka Annabelle asli adalah Raggedy Ann doll, bukan boneka porselen seperti di film",
+                    "Film ini adalah spin-off pertama dari The Conjuring Universe",
+                    "Boneka asli masih disimpan di Warren's Occult Museum"
+                ],
+                runtime: "99 min"
+            },
+            lights: {
+                id: 'lights',
+                title: "LIGHTS OUT",
+                year: "2016",
+                director: "David F. Sandberg",
+                poster: "out.jpg",
+                trailer: "https://www.youtube.com/embed/6LiKKFZyhRU",
+                synopsis: "Rebecca harus mengungkap teror yang menghantui adiknya Martin dan ibunya Sophie. Setiap kali lampu dimatikan, sosok misterius bernama Diana muncul. Diana adalah teman masa kecil Sophie yang meninggal secara tragis dan kini kembali sebagai entitas yang hanya bisa ada dalam kegelapan. Rebecca menemukan bahwa Diana memiliki koneksi yang dalam dan mengerikan dengan ibunya. Mereka harus menghadapi masa lalu untuk menyelamatkan keluarga mereka dari Diana yang obsesif.",
+                funFacts: [
+                    "Film ini berkembang dari short film viral David Sandberg yang hanya 3 menit",
+                    "Konsep sederhana 'monster yang hanya muncul dalam gelap' sangat efektif",
+                    "Budget hanya $4.9 juta tapi menghasilkan $148 juta di box office"
+                ],
+                runtime: "81 min"
+            },
+            orphan: {
+                id: 'orphan',
+                title: "ORPHAN",
+                year: "2009",
+                director: "Jaume Collet-Serra",
+                poster: "orphan.jpg",
+                trailer: "https://www.youtube.com/embed/nhziUAHlQf8",
+                synopsis: "Kate dan John Coleman mengadopsi Esther, gadis berusia 9 tahun yang tampak manis dan berbakat, dari panti asuhan setelah mengalami keguguran. Namun, serangkaian kejadian aneh dan mengerikan mulai terjadi di sekitar Esther. Kate mulai mencurigai ada sesuatu yang sangat tidak beres dengan Esther. Saat dia menyelidiki masa lalu Esther, dia mengungkap rahasia yang mengejutkan dan mengerikan. Plot twist di akhir film ini adalah salah satu yang paling mengejutkan dalam sejarah film thriller.",
+                funFacts: [
+                    "Isabelle Fuhrman berusia 12 tahun saat bermain sebagai Esther yang 'berusia 9 tahun'",
+                    "Plot twist tentang identitas Esther yang sebenarnya sangat mengejutkan",
+                    "Film mendapat sequel 'Orphan: First Kill' pada 2022"
+                ],
+                runtime: "123 min"
+            },
+            babadook: {
+                id: 'babadook',
+                title: "THE BABADOOK",
+                year: "2014",
+                director: "Jennifer Kent",
+                poster: "babadook.jpg",
+                trailer: "https://www.youtube.com/embed/k5WQZzDRVtw",
+                synopsis: "Amelia adalah single mother yang masih berduka atas kematian suaminya sambil membesarkan anaknya Samuel yang bermasalah. Suatu malam, Samuel meminta Amelia membacakan buku misterius berjudul 'Mister Babadook'. Buku tersebut berisi cerita tentang monster menakutkan yang menguntit mereka yang mengetahuinya. Segera setelah itu, kehadiran jahat mulai menghantui rumah mereka. Amelia harus menghadapi trauma masa lalunya dan monster yang mungkin hanya ada dalam pikirannya - atau mungkin nyata.",
+                funFacts: [
+                    "Film ini adalah metafora untuk grief dan mental illness",
+                    "Buku 'Mister Babadook' dalam film dibuat dengan tangan dan sangat detail",
+                    "Babadook menjadi simbol LGBT secara tidak terduga karena meme internet"
+                ],
+                runtime: "94 min"
+            },
+            descent: {
+                id: 'descent',
+                title: "THE DESCENT",
+                year: "2005",
+                director: "Neil Marshall",
+                poster: "descenr.jpg",
+                trailer: "https://www.youtube.com/embed/iw_KYXVNBqo",
+                synopsis: "Sekelompok wanita petualang pergi spelunking ke sistem gua yang belum dipetakan di Appalachian Mountains. Setelah terowongan runtuh dan menghalangi jalan keluar mereka, mereka menyadari bahwa mereka terperangkap. Namun, mereka segera menemukan bahwa mereka tidak sendirian - gua tersebut dihuni oleh makhluk humanoid buta yang berburu dengan suara dan penciuman. Dalam kegelapan yang claustrophobic, mereka harus bertahan hidup dari para crawler yang kelaparan sambil mencari jalan keluar.",
+                funFacts: [
+                    "Film memiliki dua ending berbeda untuk pasar US dan UK",
+                    "Mayoritas cast adalah wanita, sangat tidak biasa untuk film horor aksi",
+                    "Claustrophobia dan darkness menciptakan atmosphere yang sangat mencekam"
+                ],
+                runtime: "99 min"
+            },
+            blair: {
+                id: 'blair',
+                title: "THE BLAIR WITCH PROJECT",
+                year: "1999",
+                director: "Daniel Myrick, Eduardo Sánchez",
+                poster: "witch.jpg",
+                trailer: "https://www.youtube.com/embed/MBZ-POVsrlI",
+                synopsis: "Tiga mahasiswa film - Heather, Josh, dan Mike - pergi ke hutan Black Hills untuk membuat dokumenter tentang legenda Blair Witch. Mereka mewawancarai penduduk lokal dan memasuki hutan untuk mencari bukti. Namun, mereka tersesat dan mulai mengalami kejadian-kejadian supernatural yang menakutkan. Stick figures yang aneh, suara-suara di malam hari, dan ketegangan yang meningkat membuat mereka semakin paranoid. Film yang direkam dengan kamera handheld ini menciptakan found footage genre yang sangat berpengaruh.",
+                funFacts: [
+                    "Budget hanya $60,000 tapi menghasilkan $248 juta - ROI tertinggi dalam sejarah film",
+                    "Marketing viral yang jenius membuat orang percaya footage-nya nyata",
+                    "Film ini menciptakan found footage horror genre modern"
+                ],
+                runtime: "81 min"
+            },
+            paranormal: {
+                id: 'paranormal',
+                title: "PARANORMAL ACTIVITY",
+                year: "2007",
+                director: "Oren Peli",
+                poster: "paranormal.jpg",
+                trailer: "https://www.youtube.com/embed/F_UxLEqd074",
+                synopsis: "Katie dan Micah adalah pasangan muda yang pindah ke rumah baru di pinggiran kota. Katie telah mengalami kehadiran supernatural sejak kecil, dan sekarang aktivitas tersebut meningkat. Micah memutuskan untuk memasang kamera di seluruh rumah untuk merekam apa yang terjadi di malam hari. Setiap malam, aktivitas paranormal menjadi semakin intens dan menakutkan. Kamera menangkap pintu yang bergerak sendiri, suara-suara aneh, dan kehadiran jahat yang semakin dekat. Demon yang menguntit Katie memiliki rencana yang mengerikan.",
+                funFacts: [
+                    "Dibuat dengan budget hanya $15,000, menghasilkan $193 juta",
+                    "Steven Spielberg sangat menyukai film ini dan membantu distribusinya",
+                    "Ending alternatif dibuat atas saran Spielberg"
+                ],
+                runtime: "86 min"
+            },
+            cloverfield: {
+                id: 'cloverfield',
+                title: "CLOVERFIELD",
+                year: "2008",
+                director: "Matt Reeves",
+                poster: "clover.jpg",
+                trailer: "https://www.youtube.com/embed/_afPFLvh2qg",
+                synopsis: "Sekelompok teman di Manhattan mengadakan pesta perpisahan untuk Rob yang akan pindah ke Jepang. Tiba-tiba, gempa besar mengguncang kota dan listrik mati. Mereka keluar dan melihat pemandangan apokaliptik - monster raksasa sedang menghancurkan New York City. Film ini direkam dari perspektif kamera video handheld Hud saat mereka mencoba bertahan hidup dan menyelamatkan Beth, mantan pacar Rob yang terjebak di apartemennya. Mereka harus melewati zona perang antara monster, parasit kecil yang deadly, dan militer.",
+                funFacts: [
+                    "Marketing viral dengan trailer misterius tanpa judul menciptakan buzz luar biasa",
+                    "Monster tidak pernah dinamai dalam film, hanya disebut 'Cloverfield monster'",
+                    "Inspirasi dari monster film Jepang seperti Godzilla"
+                ],
+                runtime: "85 min"
+            },
+            cabin: {
+                id: 'cabin',
+                title: "THE CABIN IN THE WOODS",
+                year: "2012",
+                director: "Drew Goddard",
+                poster: "cabin.jpg",
+                trailer: "https://www.youtube.com/embed/NsIilFNNmkY",
+                synopsis: "Lima teman kuliah pergi untuk liburan ke kabin terpencil di hutan. Mereka mengikuti semua cliché horror: jock, blonde, scholar, fool, dan virgin. Namun, film ini bukan sekadar horror biasa - ada organisasi misterius yang mengendalikan dan memanipulasi semua kejadian dari fasilitas underground. Mereka melepaskan monster dan menciptakan skenario horor untuk tujuan ritual kuno. Plot twist yang brilian mengungkap bahwa ini semua adalah bagian dari konspirasi yang lebih besar untuk mencegah apocalypse.",
+                funFacts: [
+                    "Film ini adalah dekonstruksi dan parody dari horror tropes",
+                    "Chris Hemsworth membintangi film ini sebelum menjadi Thor",
+                    "Diproduseri oleh Joss Whedon, yang juga co-menulis script"
+                ],
+                runtime: "95 min"
+            },
+            vudu: {
+                id: 'vudu',
+                title: "THE WITCH",
+                year: "2015",
+                director: "Robert Eggers",
+                poster: "https://image.tmdb.org/t/p/w500/zap5hpFCWSvdWSuPGAQyjUv2wAC.jpg",
+                trailer: "https://www.youtube.com/embed/iQXmlf3Sefg",
+                synopsis: "New England tahun 1630-an. Keluarga Puritan diusir dari komunitas mereka karena perbedaan agama dan membangun farm di tepi hutan yang gelap. Ketika bayi mereka menghilang secara misterius dan tanaman mereka gagal, paranoia dan ketakutan mulai menguasai. Putri tertua, Thomasin, dicurigai sebagai penyihir oleh keluarganya sendiri. Kambing hitam bernama Black Phillip berperilaku aneh. Kejadian supernatural dan psikologis yang mengerikan menghancurkan keluarga dari dalam. Film ini menciptakan folk horror yang autentik dan disturbing.",
+                funFacts: [
+                    "Dialog diambil dari jurnal dan dokumen periode 1600-an untuk autentisitas",
+                    "Anya Taylor-Joy debut filmnya di sini sebagai Thomasin",
+                    "Kambing Black Phillip menjadi meme internet yang populer"
+                ],
+                runtime: "92 min"
+            },
+            lighthouse: {
+                id: 'lighthouse',
+                title: "THE LIGHTHOUSE",
+                year: "2019",
+                director: "Robert Eggers",
+                poster: "https://image.tmdb.org/t/p/w500/3nk9UoepYmv1G9oP18q6JJCeYwN.jpg",
+                trailer: "https://www.youtube.com/embed/Hyag7lR8CPA",
+                synopsis: "Tahun 1890-an, dua lighthouse keeper - Thomas Wake yang berpengalaman dan Ephraim Winslow yang baru - terisolasi di pulau terpencil di New England. Mereka harus bekerja selama empat minggu, namun badai yang mengerikan membuat mereka terjebak lebih lama. Kegilaan perlahan merayap karena isolasi, alkohol, dan rahasia gelap. Winslow terobsesi dengan cahaya lighthouse yang Wake larang dia sentuh. Halusinasi, paranoia, dan kekerasan meningkat. Film hitam-putih dengan aspect ratio 1.19:1 ini menciptakan psychological horror yang mencekam.",
+                funFacts: [
+                    "Shot dalam hitam-putih dengan aspect ratio kotak seperti film silent era",
+                    "Robert Pattinson dan Willem Dafoe memberikan performa yang intens",
+                    "Banyak interpretasi tentang mitologi Yunani, terutama Prometheus"
+                ],
+                runtime: "109 min"
+            },
+            invisible: {
+                id: 'invisible',
+                title: "THE INVISIBLE MAN",
+                year: "2020",
+                director: "Leigh Whannell",
+                poster: "https://image.tmdb.org/t/p/w500/5EufsDwXdY2CVttYOk2WtYhgKpa.jpg",
+                trailer: "https://www.youtube.com/embed/WO_FJdiY9dA",
+                synopsis: "Cecilia melarikan diri dari hubungan abusive dengan Adrian, ilmuwan optik yang kaya dan brilian. Setelah Adrian bunuh diri, Cecilia mewarisi kekayaannya. Namun, dia mulai percaya bahwa Adrian tidak benar-benar mati - dia telah menemukan cara untuk menjadi tidak terlihat dan menguntitnya. Tidak ada yang percaya padanya karena tidak ada bukti. Cecilia harus membuktikan bahwa dia tidak gila sambil menghadapi teror yang tidak terlihat. Film ini adalah thriller psikologis modern tentang gaslighting dan domestic abuse.",
+                funFacts: [
+                    "Remake modern dari novel H.G. Wells tahun 1897",
+                    "Elisabeth Moss memberikan performa yang powerful sebagai Cecilia",
+                    "Film menggunakan teknologi invisible man sebagai metafora untuk abusive relationship"
+                ],
+                runtime: "124 min"
+            },
+            quiet: {
+                id: 'quiet',
+                title: "A QUIET PLACE",
+                year: "2018",
+                director: "John Krasinski",
+                poster: "https://image.tmdb.org/t/p/w500/nAU74GmpUk7t5iklEp3bufwDq4n.jpg",
+                trailer: "https://www.youtube.com/embed/WR7cc5t7tv8",
+                synopsis: "Dunia telah diambil alih oleh makhluk alien buta yang berburu menggunakan suara yang sangat sensitif. Keluarga Abbott - Lee, Evelyn, dan anak-anak mereka - bertahan hidup dengan berkomunikasi menggunakan bahasa isyarat dan menghindari suara apapun. Mereka telah menciptakan sistem untuk hidup dalam keheningan total. Namun, saat Evelyn hamil dan akan melahirkan, tantangan baru muncul - bagaimana menjaga bayi tetap tenang? Keluarga harus menemukan cara untuk melawan makhluk-makhluk ini sambil menjaga satu sama lain.",
+                funFacts: [
+                    "Mayoritas film tanpa dialog, menggunakan American Sign Language",
+                    "Emily Blunt dan John Krasinski adalah pasangan di real life",
+                    "Sound design adalah elemen krusial yang menciptakan tension"
+                ],
+                runtime: "90 min"
+            },
+            hostel: {
+                id: 'hostel',
+                title: "HOSTEL",
+                year: "2005",
+                director: "Eli Roth",
+                poster: "hostel.jpg",
+                trailer: "https://www.youtube.com/embed/R0ShE0EbcCA",
+                synopsis: "Tiga backpackers - Paxton, Josh, dan Óli - traveling di Eropa mencari petualangan dan hedonisme. Di Slovakia, mereka diberitahu tentang hostel di mana wanita-wanita cantik menginap. Namun, hostel tersebut adalah front untuk organisasi torture club yang mengerikan di mana orang kaya membayar untuk menyiksa dan membunuh turis. Mereka terperangkap dalam permainan sadis Elite Hunting Club. Paxton harus menemukan cara untuk melarikan diri dari warehouse torture yang mengerikan.",
+                funFacts: [
+                    "Film ini memulai trend 'torture porn' subgenre",
+                    "Terinspirasi dari website Thailand yang konon menjual kesempatan membunuh orang",
+                    "Quentin Tarantino memproduseri film ini"
+                ],
+                runtime: "94 min"
+            },
+            thirty: {
+                id: 'thirty',
+                title: "30 DAYS OF NIGHT",
+                year: "2007",
+                director: "David Slade",
+                poster: "30.jpg",
+                trailer: "https://www.youtube.com/embed/8ClVrVK_y0E",
+                synopsis: "Barrow, Alaska adalah kota paling utara di Amerika yang mengalami polar night - 30 hari tanpa matahari. Sheriff Eben Oleson dan estranged wife-nya Stella mempersiapkan kota untuk periode gelap ini. Namun, sekelompok vampir yang brutal dan primitive datang untuk memanfaatkan kegelapan yang panjang. Mereka bukan vampir romantis - mereka adalah predator savage yang berbicara bahasa kuno. Eben dan sekelompok survivor harus bertahan hidup selama 30 hari penuh dalam kegelapan sambil diburu oleh vampir yang haus darah.",
+                funFacts: [
+                    "Vampir di film ini sangat berbeda dari representasi Hollywood biasa",
+                    "Vampir berbicara dalam bahasa yang diciptakan khusus untuk film",
+                    "Setting Alaska yang terisolasi dan cold menambah atmosphere"
+                ],
+                runtime: "113 min"
+            },
+            rec: {
+                id: 'rec',
+                title: "[REC]",
+                year: "2007",
+                director: "Jaume Balagueró, Paco Plaza",
+                poster: "rec.jpg",
+                trailer: "https://www.youtube.com/embed/KLizS5GFBQI",
+                synopsis: "Angela Vidal, reporter TV, dan kameramen Pablo meliput shift malam firefighters untuk program reality TV. Mereka merespons panggilan darurat ke apartment building tua di Barcelona. Setelah masuk untuk menyelidiki, building tersebut tiba-tiba di-quarantine oleh pemerintah tanpa penjelasan. Mereka terjebak di dalam dengan penghuni lainnya. Segera terungkap bahwa ada infeksi mengerikan yang mengubah orang menjadi makhluk agresif dan rabies-like. Film found footage ini direkam dari perspektif kamera Pablo dalam real-time yang mencekam.",
+                funFacts: [
+                    "Film Spanyol yang kemudian di-remake Hollywood sebagai 'Quarantine'",
+                    "Akting sangat natural karena aktor tidak tahu banyak tentang script",
+                    "Final scene dengan night vision menjadi salah satu yang paling menakutkan"
+                ],
+                runtime: "78 min"
+            },
+            martyrs: {
+                id: 'martyrs',
+                title: "MARTYRS",
+                year: "2008",
+                director: "Pascal Laugier",
+                poster: "mar.jpg",
+                trailer: "https://www.youtube.com/embed/tisO-8dPrEs",
+                synopsis: "Lucie, yang trauma dari abuse masa kecilnya, mencari balas dendam terhadap orang-orang yang menyiksanya. Bersama temannya Anna, dia mengeksekusi keluarga yang dia yakini sebagai pelakunya. Namun, Lucie terus dihantui oleh makhluk mengerikan yang mungkin hanya halusinasi. Setelah menemukan korban lain di rumah tersebut, Anna mengungkap organisasi rahasia yang melakukan eksperimen ekstrem untuk menemukan 'enlightenment' melalui penderitaan. Film French extreme horror ini sangat brutal dan filosofis, mengeksplorasi sampai di mana manusia bisa bertahan dalam suffering.",
+                funFacts: [
+                    "Salah satu film paling kontroversial dalam new French extremity movement",
+                    "Film dibagi menjadi dua bagian yang sangat berbeda tonalitasnya",
+                    "Ending filosofis yang ambigu masih diperdebatkan hingga sekarang"
+                ],
+                runtime: "99 min"
+            },
+            funny: {
+                id: 'funny',
+                title: "FUNNY GAMES",
+                year: "1997",
+                director: "Michael Haneke",
+                poster: "funny.jpg",
+                trailer: "https://www.youtube.com/embed/bH2HS6uWIhQ",
+                synopsis: "Keluarga Schober - Anna, Georg, dan putra mereka Georgie - tiba di rumah liburan mereka di tepi danau. Dua pria muda berpakaian putih, Peter dan Paul, datang meminta pinjam telur. Apa yang dimulai sebagai interaksi canggung berubah menjadi mimpi buruk sadis. Peter dan Paul menahan keluarga sebagai sandera dan memaksa mereka bermain 'games' yang brutal. Film ini unik karena breaking the fourth wall dan mengkritik konsumsi kekerasan dalam media. Michael Haneke membuat statement yang powerful tentang violence dalam cinema.",
+                funFacts: [
+                    "Haneke membuat shot-for-shot remake bahasa Inggris tahun 2007",
+                    "Film ini mengkritik audience yang menonton violence for entertainment",
+                    "Scene remote control yang rewind adalah meta-commentary yang jenius"
+                ],
+                runtime: "108 min"
+            }
+        };
+
+        // Achievements Data
+        const achievements = [
+            {
+                id: 'first_movie',
+                title: 'First Steps',
+                description: 'Watch your first movie',
+                icon: '🎬',
+                condition: () => getUserData().watchedMovies.length >= 1
+            },
+            {
+                id: 'horror_master',
+                title: 'Horror Master',
+                description: 'Watch all 40 movies',
+                icon: '👑',
+                condition: () => getUserData().watchedMovies.length >= 40
+            },
+            {
+                id: 'critic',
+                title: 'The Critic',
+                description: 'Rate 5 movies',
+                icon: '⭐',
+                condition: () => {
+                    const ratings = getUserData().ratings;
+                    return Object.keys(ratings).length >= 5;
+                }
+            },
+            {
+                id: 'binge_watcher',
+                title: 'Binge Watcher',
+                description: 'Watch 5 movies in one day',
+                icon: '📺',
+                condition: () => {
+                    const history = getUserData().watchHistory;
+                    const today = new Date().toDateString();
+                    const todayWatched = history.filter(h => new Date(h.date).toDateString() === today);
+                    return todayWatched.length >= 5;
+                }
+            },
+            {
+                id: 'night_owl',
+                title: 'Night Owl',
+                description: 'Login at midnight',
+                icon: '🦉',
+                condition: () => {
+                    const hour = new Date().getHours();
+                    return hour === 0 || hour === 23;
+                }
+            },
+            {
+                id: 'kubrick_fan',
+                title: 'Kubrick Fan',
+                description: 'Watch The Shining',
+                icon: '🎭',
+                condition: () => getUserData().watchedMovies.includes('shining')
+            },
+            {
+                id: 'peele_enthusiast',
+                title: 'Peele Enthusiast',
+                description: 'Watch Get Out',
+                icon: '🎪',
+                condition: () => getUserData().watchedMovies.includes('getout')
+            },
+            {
+                id: 'note_taker',
+                title: 'Note Taker',
+                description: 'Write notes for 3 movies',
+                icon: '📝',
+                condition: () => {
+                    const notes = getUserData().notes;
+                    return Object.keys(notes).filter(k => notes[k].trim()).length >= 3;
+                }
+            },
+            {
+                id: 'streak_7',
+                title: 'Week Warrior',
+                description: 'Maintain a 7-day streak',
+                icon: '🔥',
+                condition: () => getUserData().streak >= 7
+            },
+            {
+                id: 'perfectionist',
+                title: 'Perfectionist',
+                description: 'Give 5 stars to 3 movies',
+                icon: '💯',
+                condition: () => {
+                    const ratings = getUserData().ratings;
+                    const fiveStars = Object.values(ratings).filter(r => r === 5);
+                    return fiveStars.length >= 3;
+                }
+            }
+        ];
+
+        // Local Storage Functions
+        function getUserData() {
+            const defaultData = {
+                username: 'User',
+                ratings: {},
+                watchedMovies: [],
+                watchlist: [],
+                watching: [],
+                notes: {},
+                watchHistory: [],
+                lastLogin: new Date().toISOString(),
+                streak: 0,
+                theme: 'blood-red',
+                profileBio: '',
+                unlockedAchievements: []
+            };
+            
+            const stored = localStorage.getItem('darkCinemaData');
+            return stored ? { ...defaultData, ...JSON.parse(stored) } : defaultData;
+        }
+
+        function saveUserData(data) {
+            localStorage.setItem('darkCinemaData', JSON.stringify(data));
+            updateStatistics();
+            checkAchievements();
+        }
+
+        function updateStreak() {
+            const userData = getUserData();
+            const today = new Date().toDateString();
+            const lastLogin = new Date(userData.lastLogin).toDateString();
+            
+            if (today !== lastLogin) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toDateString();
+                
+                if (lastLogin === yesterdayStr) {
+                    userData.streak += 1;
+                } else {
+                    userData.streak = 1;
+                }
+                
+                userData.lastLogin = new Date().toISOString();
+                saveUserData(userData);
+            }
+            
+            document.getElementById('streakCount').textContent = userData.streak;
+        }
+
+        // Login Function
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username.trim() && password.trim()) {
+                const userData = getUserData();
+                userData.username = username.trim();
+                saveUserData(userData);
+                
+                document.getElementById('displayUsername').textContent = username.trim();
+                document.getElementById('loginPage').classList.remove('active');
+                document.getElementById('mainPage').classList.add('active');
+                
+                updateStreak();
+                initializeApp();
+                showToast('Welcome back to the darkness! 🎬');
+            } else {
+                showToast('⚠ Please enter username and password!');
+            }
+        }
+
+        // Initialize App
+        function initializeApp() {
+            const userData = getUserData();
+            document.getElementById('displayUsername').textContent = userData.username;
+            
+            // Apply saved theme
+            changeTheme(userData.theme, false);
+            
+            // Load profile
+            if (userData.profileBio) {
+                document.getElementById('profileBio').value = userData.profileBio;
+            }
+            document.getElementById('profileName').value = userData.username;
+            
+            renderMovies();
+            updateStatistics();
+            renderAchievements();
+        }
+
+        // Render Movies
+        function renderMovies() {
+            const grid = document.getElementById('moviesGrid');
+            const userData = getUserData();
+            let moviesArray = Object.values(movies);
+            
+            // Apply filters
+            if (currentFilter !== 'all') {
+                moviesArray = moviesArray.filter(movie => {
+                    if (currentFilter === 'watchlist') return userData.watchlist.includes(movie.id);
+                    if (currentFilter === 'watching') return userData.watching.includes(movie.id);
+                    if (currentFilter === 'completed') return userData.watchedMovies.includes(movie.id);
+                    return true;
+                });
+            }
+            
+            // Apply search
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                moviesArray = moviesArray.filter(movie => 
+                    movie.title.toLowerCase().includes(searchTerm) ||
+                    movie.director.toLowerCase().includes(searchTerm) ||
+                    movie.year.includes(searchTerm)
+                );
+            }
+            
+            // Apply sorting
+            if (currentSort === 'year') {
+                moviesArray.sort((a, b) => b.year.localeCompare(a.year));
+            } else if (currentSort === 'title') {
+                moviesArray.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (currentSort === 'rating') {
+                moviesArray.sort((a, b) => (userData.ratings[b.id] || 0) - (userData.ratings[a.id] || 0));
+            }
+            
+            // Calculate pagination
+            const totalMovies = moviesArray.length;
+            const totalPages = Math.ceil(totalMovies / moviesPerPage);
+            
+            // Make sure current page is valid
+            if (currentPage > totalPages) {
+                currentPage = totalPages || 1;
+            }
+            
+            // Get movies for current page
+            const startIndex = (currentPage - 1) * moviesPerPage;
+            const endIndex = startIndex + moviesPerPage;
+            const currentMovies = moviesArray.slice(startIndex, endIndex);
+            
+            // Render movies
+            grid.innerHTML = currentMovies.map(movie => {
+                const rating = userData.ratings[movie.id] || 0;
+                const isWatchlist = userData.watchlist.includes(movie.id);
+                const isWatching = userData.watching.includes(movie.id);
+                const isCompleted = userData.watchedMovies.includes(movie.id);
+                
+                let statusBadge = '';
+                if (isWatching) statusBadge = '<div class="status-badge watching">Watching</div>';
+                else if (isCompleted) statusBadge = '<div class="status-badge completed">Completed</div>';
+                
+                return `
+                    <div class="movie-card" onclick="showModal('${movie.id}')">
+                        ${statusBadge}
+                        <div class="movie-actions">
+                            <button class="action-btn ${isWatchlist ? 'active' : ''}" 
+                                    onclick="event.stopPropagation(); toggleWatchlist('${movie.id}')">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                        <img src="${movie.poster}" alt="${movie.title}" class="movie-poster">
+                        <div class="movie-overlay">
+                            <h3 class="movie-title">${movie.title}</h3>
+                            <p class="movie-meta">${movie.year} | ${movie.director}</p>
+                            <div class="movie-rating">
+                                ${renderStars(rating, movie.id, true)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Update pagination
+            updatePagination(totalPages, totalMovies, startIndex, endIndex);
+        }
+        
+        // Update Pagination UI
+        function updatePagination(totalPages, totalMovies, startIndex, endIndex) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const paginationNumbers = document.getElementById('paginationNumbers');
+            
+            // Update buttons state
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // Generate page numbers
+            let pagesHtml = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Adjust start if we're near the end
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // First page
+            if (startPage > 1) {
+                pagesHtml += `<button class="page-number" onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) {
+                    pagesHtml += `<span style="color: var(--text-gray); padding: 0 5px;">...</span>`;
+                }
+            }
+            
+            // Page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? 'active' : '';
+                pagesHtml += `<button class="page-number ${activeClass}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            // Last page
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pagesHtml += `<span style="color: var(--text-gray); padding: 0 5px;">...</span>`;
+                }
+                pagesHtml += `<button class="page-number" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            paginationNumbers.innerHTML = pagesHtml;
+            
+            // Update info text
+            const actualStart = Math.min(startIndex + 1, totalMovies);
+            const actualEnd = Math.min(endIndex, totalMovies);
+            document.getElementById('showingRange').textContent = totalMovies > 0 ? `${actualStart}-${actualEnd}` : '0';
+            document.getElementById('totalMovies2').textContent = totalMovies;
+        }
+        
+        // Pagination Functions
+        function changePage(direction) {
+            currentPage += direction;
+            renderMovies();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function goToPage(page) {
+            currentPage = page;
+            renderMovies();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Stars
+        function renderStars(rating, movieId, small = false) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                const filled = i <= rating ? 'filled' : '';
+                const size = small ? 'font-size: 1em;' : '';
+                html += `<span class="star ${filled}" style="${size}" onclick="event.stopPropagation(); rateMovie('${movieId}', ${i})">★</span>`;
+            }
+            return html;
+        }
+
+        // Movie Actions
+        function toggleWatchlist(movieId) {
+            const userData = getUserData();
+            const index = userData.watchlist.indexOf(movieId);
+            
+            if (index > -1) {
+                userData.watchlist.splice(index, 1);
+                showToast('Removed from watchlist');
+            } else {
+                userData.watchlist.push(movieId);
+                showToast('Added to watchlist ⭐');
+            }
+            
+            saveUserData(userData);
+            renderMovies();
+        }
+
+        function rateMovie(movieId, rating) {
+            const userData = getUserData();
+            userData.ratings[movieId] = rating;
+            saveUserData(userData);
+            
+            showToast(`Rated ${rating} stars! ⭐`);
+            renderMovies();
+            
+            // Update modal if open
+            if (currentMovieId === movieId) {
+                document.getElementById('modalRating').innerHTML = renderStars(rating, movieId);
+            }
+        }
+
+        function updateMovieStatus(movieId, status) {
+            const userData = getUserData();
+            
+            // Remove from all lists
+            userData.watchlist = userData.watchlist.filter(id => id !== movieId);
+            userData.watching = userData.watching.filter(id => id !== movieId);
+            userData.watchedMovies = userData.watchedMovies.filter(id => id !== movieId);
+            
+            // Add to appropriate list
+            if (status === 'watchlist') {
+                userData.watchlist.push(movieId);
+                showToast('Added to watchlist 📚');
+            } else if (status === 'watching') {
+                userData.watching.push(movieId);
+                showToast('Marked as watching 📺');
+            } else if (status === 'completed') {
+                userData.watchedMovies.push(movieId);
+                userData.watchHistory.push({
+                    movieId: movieId,
+                    date: new Date().toISOString()
+                });
+                showToast('Marked as completed ✅');
+            }
+            
+            saveUserData(userData);
+            renderMovies();
+        }
+
+        // Modal Functions
+        function showModal(movieId) {
+            currentMovieId = movieId;
+            const movie = movies[movieId];
+            const userData = getUserData();
+            
+            document.getElementById('modalTitle').textContent = movie.title;
+            document.getElementById('modalMeta').textContent = `${movie.year} | ${movie.director} | ${movie.runtime}`;
+            document.getElementById('modalPoster').src = movie.poster;
+            document.getElementById('modalSynopsis').textContent = movie.synopsis;
+            
+            // Load trailer
+            document.getElementById('trailerVideo').src = movie.trailer;
+            
+            // Load rating
+            const rating = userData.ratings[movieId] || 0;
+            document.getElementById('modalRating').innerHTML = renderStars(rating, movieId);
+            
+            // Load notes
+            document.getElementById('movieNotes').value = userData.notes[movieId] || '';
+            
+            // Load fun facts
+            if (movie.funFacts) {
+                const factsHtml = movie.funFacts.map(fact => 
+                    `<p style="margin-bottom: 10px;">• ${fact}</p>`
+                ).join('');
+                document.getElementById('funFacts').innerHTML = factsHtml;
+            }
+            
+            document.getElementById('movieModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('movieModal').classList.remove('active');
+            document.getElementById('trailerVideo').src = '';
+            currentMovieId = null;
+        }
+
+        function saveMovieNotes(movieId) {
+            const userData = getUserData();
+            const notes = document.getElementById('movieNotes').value;
+            userData.notes[movieId] = notes;
+            saveUserData(userData);
+            showToast('Notes saved! 📝');
+        }
+
+        // Filter & Sort Functions
+        function filterMovies() {
+            currentPage = 1; // Reset to first page when searching
+            renderMovies();
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            currentPage = 1; // Reset to first page when filtering
+            
+            // Update button states
+            document.querySelectorAll('.filter-buttons button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderMovies();
+        }
+
+        function sortMovies(type) {
+            currentSort = type;
+            currentPage = 1; // Reset to first page when sorting
+            
+            // Update button states
+            document.querySelectorAll('.filter-buttons button').forEach(btn => {
+                if (btn.textContent.includes('Default') || 
+                    btn.textContent.includes('Year') || 
+                    btn.textContent.includes('A-Z') || 
+                    btn.textContent.includes('Rating')) {
+                    btn.classList.remove('active');
+                }
+            });
+            event.target.classList.add('active');
+            
+            renderMovies();
+        }
+
+        // Statistics
+        function updateStatistics() {
+            const userData = getUserData();
+            
+            // Basic stats
+            document.getElementById('totalMovies').textContent = Object.keys(movies).length;
+            document.getElementById('watchedCount').textContent = userData.watchedMovies.length;
+            
+            // Average rating
+            const ratings = Object.values(userData.ratings);
+            const avgRating = ratings.length > 0 
+                ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+                : '0.0';
+            document.getElementById('avgRating').textContent = avgRating;
+            
+            // Achievements
+            const unlockedCount = achievements.filter(a => a.condition()).length;
+            document.getElementById('achievementCount').textContent = unlockedCount;
+            
+            // Extended stats
+            const watchedHours = userData.watchedMovies.length * 2; // Approximate
+            document.getElementById('totalWatchTime').textContent = watchedHours;
+            
+            // Favorite director
+            const directorCounts = {};
+            userData.watchedMovies.forEach(id => {
+                const director = movies[id].director;
+                directorCounts[director] = (directorCounts[director] || 0) + 1;
+            });
+            const favoriteDir = Object.keys(directorCounts).sort((a, b) => 
+                directorCounts[b] - directorCounts[a]
+            )[0] || '-';
+            document.getElementById('favoriteDirector').textContent = favoriteDir;
+            
+            // Favorite year
+            const yearCounts = {};
+            userData.watchedMovies.forEach(id => {
+                const year = movies[id].year;
+                yearCounts[year] = (yearCounts[year] || 0) + 1;
+            });
+            const favoriteYr = Object.keys(yearCounts).sort((a, b) => 
+                yearCounts[b] - yearCounts[a]
+            )[0] || '-';
+            document.getElementById('favoriteYear').textContent = favoriteYr;
+            
+            // Streak
+            document.getElementById('currentStreak').textContent = userData.streak;
+            
+            // Watch history
+            renderWatchHistory();
+        }
+
+        function renderWatchHistory() {
+            const userData = getUserData();
+            const historyContainer = document.getElementById('watchHistory');
+            
+            if (userData.watchHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="color: var(--text-gray); text-align: center;">No watch history yet. Start watching movies!</p>';
+                return;
+            }
+            
+            const historyHtml = userData.watchHistory
+                .slice()
+                .reverse()
+                .map(entry => {
+                    const movie = movies[entry.movieId];
+                    const date = new Date(entry.date).toLocaleDateString('id-ID', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    return `
+                        <div style="display: flex; gap: 15px; padding: 15px; background: rgba(139,0,0,0.1); border-radius: 10px; margin-bottom: 10px; align-items: center;">
+                            <img src="${movie.poster}" style="width: 60px; height: 90px; object-fit: cover; border-radius: 5px;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: bold; margin-bottom: 5px;">${movie.title}</div>
+                                <div style="color: var(--text-gray); font-size: 0.9em;">${date}</div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join('');
+            
+            historyContainer.innerHTML = historyHtml;
+        }
+
+        // Achievements
+        function renderAchievements() {
+            const grid = document.getElementById('achievementsGrid');
+            const userData = getUserData();
+            
+            const html = achievements.map(achievement => {
+                const unlocked = achievement.condition();
+                const unlockedClass = unlocked ? 'unlocked' : '';
+                
+                return `
+                    <div class="achievement-card ${unlockedClass}">
+                        <div class="achievement-icon">${achievement.icon}</div>
+                        <div class="achievement-title">${achievement.title}</div>
+                        <div class="achievement-desc">${achievement.description}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            grid.innerHTML = html;
+        }
+
+        function checkAchievements() {
+            const userData = getUserData();
+            const newlyUnlocked = [];
+            
+            achievements.forEach(achievement => {
+                if (achievement.condition() && !userData.unlockedAchievements.includes(achievement.id)) {
+                    userData.unlockedAchievements.push(achievement.id);
+                    newlyUnlocked.push(achievement);
+                }
+            });
+            
+            if (newlyUnlocked.length > 0) {
+                saveUserData(userData);
+                newlyUnlocked.forEach(a => {
+                    showToast(`🏆 Achievement Unlocked: ${a.title}!`);
+                });
+                renderAchievements();
+            }
+        }
+
+        // Theme Functions
+        function changeTheme(theme, save = true) {
+            const root = document.documentElement;
+            
+            // Remove active class from all theme buttons
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to selected theme
+            document.querySelector(`.theme-btn.${theme}`)?.classList.add('active');
+            
+            switch(theme) {
+                case 'blood-red':
+                    root.style.setProperty('--primary-color', '#8b0000');
+                    root.style.setProperty('--secondary-color', '#ff0000');
+                    break;
+                case 'midnight-blue':
+                    root.style.setProperty('--primary-color', '#000428');
+                    root.style.setProperty('--secondary-color', '#004e92');
+                    break;
+                case 'neon-purple':
+                    root.style.setProperty('--primary-color', '#4a0080');
+                    root.style.setProperty('--secondary-color', '#b300ff');
+                    break;
+                case 'classic-dark':
+                    root.style.setProperty('--primary-color', '#1a1a1a');
+                    root.style.setProperty('--secondary-color', '#333333');
+                    break;
+            }
+            
+            if (save) {
+                const userData = getUserData();
+                userData.theme = theme;
+                saveUserData(userData);
+                showToast('Theme changed! 🎨');
+            }
+        }
+
+        // Profile Functions
+        function saveProfile() {
+            const userData = getUserData();
+            const name = document.getElementById('profileName').value.trim();
+            const bio = document.getElementById('profileBio').value.trim();
+            
+            if (name) {
+                userData.username = name;
+                userData.profileBio = bio;
+                saveUserData(userData);
+                
+                document.getElementById('displayUsername').textContent = name;
+                showToast('Profile saved! 👤');
+            }
+        }
+
+        // Data Management
+        function exportData() {
+            const userData = getUserData();
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'dark-cinema-backup.json';
+            link.click();
+            
+            showToast('Data exported! 💾');
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = event => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        localStorage.setItem('darkCinemaData', JSON.stringify(data));
+                        location.reload();
+                    } catch (error) {
+                        showToast('❌ Invalid backup file!');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone!')) {
+                localStorage.removeItem('darkCinemaData');
+                location.reload();
+            }
+        }
+
+        // Share Functions
+        function shareMovie(platform) {
+            const movie = movies[currentMovieId];
+            const text = `Check out ${movie.title} (${movie.year}) directed by ${movie.director}!`;
+            const url = window.location.href;
+            
+            let shareUrl = '';
+            switch(platform) {
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+            }
+        }
+
+        function copyMovieLink() {
+            const movie = movies[currentMovieId];
+            const text = `${movie.title} (${movie.year}) - ${window.location.href}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Link copied! 🔗');
+            });
+        }
+
+        // View Management
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view-content').forEach(view => {
+                view.style.display = 'none';
+            });
+            
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Show selected view
+            switch(viewName) {
+                case 'home':
+                    document.getElementById('homeView').style.display = 'block';
+                    break;
+                case 'stats':
+                    document.getElementById('statsView').style.display = 'block';
+                    updateStatistics();
+                    break;
+                case 'achievements':
+                    document.getElementById('achievementsView').style.display = 'block';
+                    renderAchievements();
+                    break;
+                case 'settings':
+                    document.getElementById('settingsView').style.display = 'block';
+                    break;
+            }
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Enter for login
+            if (e.key === 'Enter' && document.getElementById('loginPage').classList.contains('active')) {
+                login();
+            }
+            
+            // Escape to close modal
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            
+            // Ctrl+F for search
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // Click outside modal to close
+        document.getElementById('movieModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('load', function() {
+            // Auto-fill for demo (remove in production)
+            // document.getElementById('username').value = 'CinemaFan';
+            // document.getElementById('password').value = 'horror123';
+        });
+    </script>
+</body>
+</html>
